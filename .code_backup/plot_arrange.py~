@@ -1,0 +1,54 @@
+from PIL import Image
+import numpy as np
+
+img = [ Image.open('c_0060_%d.png' % i) for i in range(8) ]
+
+# Arrange_plots ########################################################################
+def Arrange_plots(plot_list, h_num = 1, v_num = 1, size_times = 1, plot_name = 'plot', option=0):
+    # this func arrange same number of plots for each row 
+    
+    x_size_list = [ plot_list[i].size[0] for i in range(len(plot_list)) ]
+    y_size_list = [ plot_list[i].size[1] for i in range(len(plot_list)) ]    
+    
+    y_len = int( round( np.mean( y_size_list ),0 ) ) # each row y length    
+    # scale all plots to same y length   
+    for i in range(len(plot_list)):
+        plot_list[i] = plot_list[i].resize( ((round( x_size_list[i]*y_len/y_size_list[i],0) ), y_len), Image.ANTIALIAS )
+            
+    # x_len = the row which has maximum x length ##############    
+    x_len = [] 
+    for i in range(v_num):
+        x_len += [ sum( x_size_list[i*h_num+j] for j in range(h_num) ) ]
+    x_len = max(x_len)
+
+    # new_plot ################################################    
+    new_plot = Image.new( 'RGB', (x_len, v_num*y_len ) )
+    loc_list = []
+    for i in range(v_num):
+        for j in range(h_num):
+            loc_list += [ ( int(round((j/4)*x_len,0)) , (i)*y_len) ]
+    # paste ################        
+    for i in range(v_num):    
+        for j in range(h_num):
+            new_plot.paste( plot_list[i*4+j], loc_list[i*4+j] )
+    # resize ############################################     
+    new_plot = new_plot.resize( (int(round(size_times*x_len)), int(round(size_times*v_num*y_len))), Image.ANTIALIAS )
+    # option ############################################
+    if option == 'p' or option == 'sp' or option == 'ps':        
+        new_plot.show()
+    if option == 's' or option == 'sp' or option == 'ps':    
+        new_plot.save('%s.png' % plot_name)
+
+# Arrange_plots_v2 #####################################################################
+def Arrange_plots_v2(plot_list, h_num_list = [1], size_times = 1, plot_name = 'plot'):    
+    # this func let you decide how many plots in which row you like
+
+    
+    '''
+    plot arrangement:
+    first row has h_num_list[0] plots
+    second row has h_num_list[1] plots, and so on...
+    '''
+
+Arrange_plots(img,4,2,1,option='sp')
+

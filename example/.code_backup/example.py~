@@ -1,0 +1,7 @@
+from PIL import Image
+from arrange_plots import *
+
+img = [ Image.open('c_0060_%d.png' % i) for i in range(8) ]
+
+Arrange_plots(img,4,2,1,option='sp')
+
